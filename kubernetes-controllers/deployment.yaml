@@ -10,8 +10,8 @@ spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-       maxSurge: 1
-       maxUnavailable: 1
+      maxSurge: 1
+      maxUnavailable: 1
   selector:
     matchLabels:
       app: nginx
@@ -22,13 +22,44 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: nginx:1.14.2
+        image: nginx
         ports:
-        - containerPort: 80
+        - containerPort: 8000
+        volumeMounts:
+        - name: workdir
+          mountPath: /homework
+        - name: nginx-conf
+          mountPath: /etc/nginx
+          readOnly: true
+        lifecycle:
+          preStop:
+            exec:   
+              command: ["/bin/sh","-c","rm -f /homework/index.html"]
         readinessProbe:
           exec:
             command:
-            - cat
+            - ls
             - /homework/index.html
-          initialDelaySeconds: 5
-          periodSeconds: 5
+          initialDelaySeconds: 3
+          periodSeconds: 3
+      initContainers:
+      - name: install
+        image: busybox:1.28
+        command:
+        - wget
+        - "-O"
+        - "/init/index.html"
+        - http://info.cern.ch
+        volumeMounts:
+        - name: workdir
+          mountPath: /init
+      volumes:
+      - name: workdir
+        emptyDir: {}
+      - name: nginx-conf
+        configMap:
+          name: nginx-conf
+          items:
+            - key: nginx.conf
+              path: nginx.conf
+    
