@@ -4,7 +4,7 @@ metadata:
   name: nginx-deployment
   namespace: homework
   labels:
-    app: nginx
+    app: nginx-with-node-affinity
 spec:
   replicas: 3
   strategy:
@@ -14,14 +14,16 @@ spec:
       maxUnavailable: 1
   selector:
     matchLabels:
-      app: nginx
+      app: nginx-with-node-affinity
   template:
     metadata:
       labels:
-        app: nginx
+        app: nginx-with-node-affinity
     spec:
+      nodeSelector:
+        homework: "true"
       containers:
-      - name: nginx
+      - name: nginx-with-node-affinity
         image: nginx
         ports:
         - containerPort: 8000
