@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-app-parameters
+  namespace: homework
+data:
+  visible-enabled: false
+  username: 'test-user'
+  password: '****'
