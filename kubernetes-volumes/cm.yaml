@@ -4,6 +4,8 @@ metadata:
   name: my-app-parameters
   namespace: homework
 data:
-  visible-enabled: false
-  username: 'test-user'
-  password: '****'
+  key1: value1
+  key2: value2
+  file: |
+    This is a sample file content
+    that will be accessible via /conf/file

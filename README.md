@@ -210,3 +210,19 @@ spec:
 Убеждаемся, что контроллер Ingress направляет трафик
 ![Делаем запросы к Ингресс](./assets/images/hw3/curl_homework_otus.png)
 
+
+## Пошаговая инструкция выполнения домашнего задания #4
+1. Создать манифест pvc.yaml, описывающий PersistentVolumeClaim, запрашивающий хранилище с storageClass по-умолчанию
+2. Создать манифест cm.yaml для объекта типа configMap, описывающий произвольный набор пар ключ-значение
+3. В манифесте deployment.yaml 
+- изменить спецификацию volume типа emptyDir, который монтируется в init и основной контейнер, на pvc, созданный в предыдущем пункте
+- добавить монтирование ранее созданного configMap как volume к основному контейнеру пода в директорию /homework/conf, так, чтобы его содержимое можно было получить, обратившись по url /conf/file
+4. Задание с *
+- Создать манифест storageClass.yaml описывающий объект типа storageClass с provisioner https://k8s.io/minikube-hostpath и reclaimPolicy Retain
+- Изменить манифест pvc.yaml так, чтобы в нем запрашивалось хранилище созданного вами storageClass- а
+
+Применяем манифесты и проверяем работоспособность
+![Запрос к conf-файлу](./assets/images/hw4/curl_conf_file.png)
+
+Применяем манифест storageClass.yaml и измененный pvc.yaml. Проверяем
+![Проверяем storageClass у созданного pvc](./assets/images/hw4/pvc_with_my_storage.png)
