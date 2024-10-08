@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  namespace: homework
+  labels:
+    app: nginx-with-node-affinity
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: nginx-with-node-affinity
+  template:
+    metadata:
+      labels:
+        app: nginx-with-node-affinity
+    spec:
+      serviceAccountName: monitoring
+      nodeSelector:
+        homework: "true"
+      containers:
+      - name: nginx-with-node-affinity
+        image: nginx
+        ports:
+        - containerPort: 8000
+        volumeMounts:
+        - name: workdir
+          mountPath: /homework
+        - name: nginx-conf
+          mountPath: /etc/nginx
+          readOnly: true
+        lifecycle:
+          preStop:
+            exec:   
+              command: ["/bin/sh","-c","rm -f /homework/index.html"]
+        readinessProbe:
+          httpGet:
+            path: /index.html
+          initialDelaySeconds: 3
+          periodSeconds: 3
+      initContainers:
+      - name: install
+        image: busybox:1.28
+        command:
+        - wget
+        - "-O"
+        - "/init/index.html"
+        - http://info.cern.ch
+        volumeMounts:
+        - name: workdir
+          mountPath: /init
+      volumes:
+      - name: workdir
+        emptyDir: {}
+      - name: nginx-conf
+        configMap:
+          name: nginx-conf
+          items:
+            - key: nginx.conf
+              path: nginx.conf
+    
